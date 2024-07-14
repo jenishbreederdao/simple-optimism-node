@@ -46,12 +46,12 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt-get update
- 
+
 ### Install docker and docker compose on Ubuntu
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 sudo usermod -aG docker $(whoami)
- 
+
 ### Verify the Docker and docker compose install on Ubuntu
 sudo docker run hello-world
 ```
@@ -69,6 +69,7 @@ It should returns an empty container list without having any error. Otherwise, r
 ```sh
 git clone https://github.com/smartcontracts/simple-optimism-node.git
 cd simple-optimism-node
+git checkout docker-impl
 ```
 
 ### Copy .env.example to .env
@@ -83,41 +84,53 @@ Open `.env` with your editor of choice
 
 ### Mandatory configurations
 
-* **NETWORK_NAME** - Choose which Optimism network layer you want to operate on:
-    * `op-mainnet` - Optimism Mainnet
-    * `op-sepolia` - Optimism Sepolia (Testnet)
-    * `base-mainnet` - Base Mainnet
-    * `base-sepolia` - Base Sepolia (Testnet)
-* **NODE_TYPE** - Choose the type of node you want to run:
-    * `full` (Full node) - A Full node contains a few recent blocks without historical states.
-    * `archive` (Archive node) - An Archive node stores the complete history of the blockchain, including historical states.
-* **OP_NODE__RPC_ENDPOINT** - Specify the endpoint for the RPC of Layer 1 (e.g., Ethereum mainnet). For instance, you can use the free plan of Alchemy for the Ethereum mainnet.
-* **OP_NODE__L1_BEACON** - Specify the beacon endpoint of Layer 1. You can use [QuickNode for the beacon endpoint](https://www.quicknode.com). For example: https://xxx-xxx-xxx.quiknode.pro/db55a3908ba7e4e5756319ffd71ec270b09a7dce
-* **OP_NODE__RPC_TYPE** - Specify the service provider for the RPC endpoint you've chosen in the previous step. The available options are:
-    * `alchemy` - Alchemy
-    * `quicknode` - Quicknode (ETH only)
-    * `erigon` - Erigon
-    * `basic` - Other providers
-* **HEALTHCHECK__REFERENCE_RPC_PROVIDER** - Specify the public RPC endpoint for Layer 2 network you want to operate on for healthchecking. For instance:
-    * **Optimism Mainnet** - https://mainnet.optimism.io
-    * **Optimism Sepolia** - https://sepolia.optimism.io
-    * **Base Mainnet** - https://mainnet.base.org
-    * **Base Sepolia** - https://sepolia.base.org
+- **NETWORK_NAME** - Choose which Optimism network layer you want to operate on:
+  - `op-mainnet` - Optimism Mainnet
+  - `op-sepolia` - Optimism Sepolia (Testnet)
+  - `base-mainnet` - Base Mainnet
+  - `base-sepolia` - Base Sepolia (Testnet)
+- **NODE_TYPE** - Choose the type of node you want to run:
+  - `full` (Full node) - A Full node contains a few recent blocks without historical states.
+  - `archive` (Archive node) - An Archive node stores the complete history of the blockchain, including historical states.
+- **OP_NODE\_\_RPC_ENDPOINT** - Specify the endpoint for the RPC of Layer 1 (e.g., Ethereum mainnet). For instance, you can use the free plan of Alchemy for the Ethereum mainnet.
+- **OP_NODE\_\_L1_BEACON** - Specify the beacon endpoint of Layer 1. You can use [QuickNode for the beacon endpoint](https://www.quicknode.com). For example: https://xxx-xxx-xxx.quiknode.pro/db55a3908ba7e4e5756319ffd71ec270b09a7dce
+- **OP_NODE\_\_RPC_TYPE** - Specify the service provider for the RPC endpoint you've chosen in the previous step. The available options are:
 
-### OP Mainnet only configurations
+  - `alchemy` - Alchemy
+  - `quicknode` - Quicknode (ETH only)
+  - `erigon` - Erigon
+  - `basic` - Other providers
 
-* **OP_GETH__HISTORICAL_RPC** - OP Mainnet RPC Endpoint for fetching pre-bedrock historical data
-    * **Recommended:** https://mainnet.optimism.io
-    * Leave blank if you want to self-host pre-bedrock historical node for high-throughput use cases such as subgraph indexing.
+- **PORT\_\_[...]** - Use custom port for specified components.
 
 ### Optional configurations
 
-* **OP_GETH__SYNCMODE** - Specify sync mode for the execution client
-    * Unspecified - Use default snap sync for full node and full sync for archive node
-    * `snap` - Snap Sync (Default)
-    * `full` - Full Sync (For archive node, not recommended for full node)
-* **IMAGE_TAG__[...]** - Use custom docker image for specified components.
-* **PORT__[...]** - Use custom port for specified components.
+- **OP_GETH\_\_SYNCMODE** - Specify sync mode for the execution client
+  - Unspecified - Use default snap sync for full node and full sync for archive node
+  - `snap` - Snap Sync (Default)
+  - `full` - Full Sync (For archive node, not recommended for full node)
+- **IMAGE_TAG\_\_[...]** - Use custom docker image for specified components.
+
+### Copy genesis.json from sequencer to ./envs/$NETWORK_NAME/config
+
+If no directory config, make new directory first
+
+```sh
+mkdir ./envs/$NETWORK_NAME/config
+```
+
+then,
+Copy genesis.json file
+
+```sh
+cp $GENESIS_FILE_PATH/genesis.json ./envs/$NETWORK_NAME/config
+```
+
+### Go to ./envs/$NETWORK_NAME/config directory and generate jwt.txt
+
+```sh
+openssl rand -hex 32 > jwt.txt
+```
 
 ## Operating the Node
 
@@ -142,10 +155,9 @@ docker compose logs <CONTAINER_NAME> -f --tail 10
 ```
 
 To view logs for a specific container. Most commonly used `<CONTAINER_NAME>` are:
-* op-geth
-* op-node
-* bedrock-init
-* l2geth
+
+- op-geth
+- op-node
 
 ### Stop
 
@@ -222,6 +234,7 @@ Navigate over to `Dashboards > Manage > Simple Node Dashboard` to see the dashbo
 ### Walking back L1Block with curr=0x0000...:0 next=0x0000...:0
 
 If you experience "walking back L1Block with curr=0x0000...:0 next=0x0000...:0" for a long time after the Ecotone upgrade, consider these fixes:
+
 1. Wait for a few minutes. This issue usually resolves itself after some time.
 2. Restart docker compose: `docker compose down` and `docker compose up -d --build`
 3. If it's still not working, try setting `OP_GETH__SYNCMODE=full` in .env and restart docker compose
