@@ -8,7 +8,7 @@ exec op-node \
   --rpc.addr=0.0.0.0 \
   --rpc.port=$PORT__OP_NODE_HTTP \
   --rollup.config=/chainconfig/rollup.json \
-  --l2.jwt-secret=/shared/jwt.txt \
+  --l2.jwt-secret=/chainconfig/jwt.txt \
   --l1.trustrpc \
   --l1.rpckind=$OP_NODE__RPC_TYPE \
   --p2p.listen.ip=0.0.0.0 \
