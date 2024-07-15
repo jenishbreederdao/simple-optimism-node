@@ -1,6 +1,7 @@
 version: "3.4"
 services:
   op-geth:
+    container_name: op-geth-non-sequencer
     image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:v1.101315.2
     restart: unless-stopped
     stop_grace_period: 5m
@@ -23,6 +24,7 @@ services:
       - ${PORT__OP_GETH_P2P:-39393}:${PORT__OP_GETH_P2P:-39393}/tcp
 
   op-node:
+    container_name: op-node-non-sequencer
     image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:v1.7.7
     restart: unless-stopped
     stop_grace_period: 5m
