@@ -13,6 +13,8 @@ services:
       - ./scripts/:/scripts
       - shared:/shared
       - op_geth:/geth
+    networks:
+      - op-network
     ports:
       - ${PORT__OP_GETH_HTTP}:${PORT__OP_GETH_HTTP}
       - ${PORT__OP_GETH_WS}:${PORT__OP_GETH_WS}
@@ -32,6 +34,8 @@ services:
       - ./envs/${NETWORK_NAME}/config:/chainconfig
       - ./scripts/:/scripts
       - shared:/shared
+    networks:
+      - op-network
     ports:
       - ${PORT__OP_NODE_P2P}:${PORT__OP_NODE_P2P}/udp
       - ${PORT__OP_NODE_P2P}:${PORT__OP_NODE_P2P}/tcp
@@ -41,3 +45,6 @@ volumes:
   geth:
   shared:
   op_geth:
+
+networks:
+  op-network:
