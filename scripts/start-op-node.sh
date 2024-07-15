@@ -4,7 +4,7 @@ set -eou
 # Start op-node.
 exec op-node \
   --l1=$OP_NODE__RPC_ENDPOINT \
-  --l2=$L2_RPC_WS_URL \
+  --l2=$OP_GETH_AUTH_RPC_URL \
   --rpc.addr=0.0.0.0 \
   --rpc.port=$PORT__OP_NODE_HTTP \
   --rollup.config=/chainconfig/rollup.json \
