@@ -47,13 +47,12 @@ exec geth \
   --gcmode="$NODE_TYPE" \
   --authrpc.vhosts="*" \
   --authrpc.addr=0.0.0.0 \
-  --authrpc.port=8551 \
+  --authrpc.port=$PORT__OP_GETH_AUTH_RPC \
   --authrpc.jwtsecret=/chainconfig/jwt.txt \
   --rollup.sequencerhttp="$BEDROCK_SEQUENCER_HTTP" \
   --rollup.disabletxpoolgossip=true \
   --port="${PORT__OP_GETH_P2P:-39393}" \
   --discovery.port="${PORT__OP_GETH_P2P:-39393}" \
   --db.engine=pebble \
-  --authrpc.port=$PORT__OP_GETH_AUTH_RPC \
   $EXTENDED_ARG $@
 
