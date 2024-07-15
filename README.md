@@ -111,7 +111,7 @@ Open `.env` with your editor of choice
   - `full` - Full Sync (For archive node, not recommended for full node)
 - **IMAGE_TAG\_\_[...]** - Use custom docker image for specified components.
 
-### Copy genesis.json from sequencer to ./envs/$NETWORK_NAME/config
+### Copy genesis.json and rollup.json from sequencer to ./envs/$NETWORK_NAME/config
 
 If no directory config, make new directory first
 
@@ -124,6 +124,12 @@ Copy genesis.json file
 
 ```sh
 cp $GENESIS_FILE_PATH/genesis.json ./envs/$NETWORK_NAME/config
+```
+
+Copy rollup.json file
+
+```sh
+cp $ROLLUP_FILE_PATH/rollup.json ./envs/$NETWORK_NAME/config
 ```
 
 ### Go to ./envs/$NETWORK_NAME/config directory and generate jwt.txt
