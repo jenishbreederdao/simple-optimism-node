@@ -54,5 +54,5 @@ exec geth \
   --port="${PORT__OP_GETH_P2P:-39393}" \
   --discovery.port="${PORT__OP_GETH_P2P:-39393}" \
   --db.engine=pebble \
-  $EXTENDED_ARG $@
+  $EXTENDED_ARG_OP_GETH $@
 

@@ -11,7 +11,8 @@ exec op-node \
   --l2.jwt-secret=/shared/jwt.txt \
   --l1.trustrpc \
   --l1.rpckind=$OP_NODE__RPC_TYPE \
+  --p2p.listen.ip=0.0.0.0 \
   --p2p.listen.tcp=$PORT__OP_NODE_P2P \
   --l1.beacon=$OP_NODE__L1_BEACON \
   --syncmode=execution-layer \
-  $EXTENDED_ARG $@
+  $EXTENDED_ARG_OP_NODE $@
